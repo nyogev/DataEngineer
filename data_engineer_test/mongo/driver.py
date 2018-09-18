@@ -78,7 +78,3 @@ class MongoDriver():
             collection.delete_many({})
         finally:
             conn.close()
-
-    
-        
-
