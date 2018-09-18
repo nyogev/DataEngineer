@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+  variables:
+    ZIP_FILE: "isentia_scrapy_proj.zip"
+    BUCKET_NAME: "isentiascrapydeployment"
+    LAMBDA_NAME: "IsentiaScrapyLambda"
+
+phases:
+  install:
+    commands:
+      - echo Entered install phase...
+      - apt-get update -y
+      - apt-get install -y python zip
+      - pip install --upgrade pip
+      - pip install awscli
+  build:
+    commands:
+      - echo Build started on `date`
+      - pip install -r requirements.txt -t site-packages
+      - cd site-packages
+      - zip -r9 ../$ZIP_FILE * -x *\*.pyc *.DS_Store* external/\* boto3/\* boto3-1.7.4.dist-info/\* botocore/\* botocore-1.10.4.dist-info/\*
+      - cd ..
+      - zip -g $ZIP_FILE web-api-image-processing.py text_detect.py service_account.json
+  post_build:
+    commands:
+      - echo Build finished on `date`
+      # Very hacky but it works for now. Should probably try to use something else better later
+      - aws s3 cp $ZIP_FILE s3://$BUCKET_NAME
+      - aws lambda update-function-code --function-name $LAMBDA_NAME --s3-bucket $BUCKET_NAME --s3-key $ZIP_FILE --publish
+
+artifacts:
+  files:
+    - 'isentia_scrapy_proj.zip'
+  discard-paths: yes
