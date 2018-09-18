@@ -9,8 +9,12 @@ def search_article(text):
     mongo_driver = driver.MongoDriver()
     return mongo_driver.search_article(text)
 
+def truncate_database():
+    mongo_driver = driver.MongoDriver()
+    mongo_driver.truncate_database()
+
 
     
 if __name__ == '__main__':
-    results = search_article("trump")
+    results = search_article("Trump")
     print(results)

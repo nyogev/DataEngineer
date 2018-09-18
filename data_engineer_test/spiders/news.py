@@ -21,6 +21,7 @@ class NewsSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         title = response.xpath('//h1[contains(@class, "story-headline")]/text()').extract_first()
+        author = response.xpath('//div[contains(@class, "author-info")]/text()').extract_first()
         content = response.xpath('//article/div[contains(@class, "story-content")]/'
                                'p/text()').extract()
         content_summary = response.xpath('//article/p[contains(@class, "description")]/text()').extract()
@@ -29,6 +30,7 @@ class NewsSpider(scrapy.Spider):
             'title': utils.sanitise_string(title),
             'content': utils.sanitise_string(content),
             'content_summary': utils.sanitise_string(content_summary),
+            'author' :  utils.sanitise_string(author),
             'url' : utils.sanitise_string(response.url)
         }
 
