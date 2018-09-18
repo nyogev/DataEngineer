@@ -16,5 +16,5 @@ def truncate_database():
 
     
 if __name__ == '__main__':
-    results = search_article("Trump")
+    results = search_article("Apple")
     print(results)

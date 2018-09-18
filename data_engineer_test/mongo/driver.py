@@ -58,18 +58,17 @@ class MongoDriver():
             conn.close()
 
     def search_article(self, text):
-        article_list = list()
-        result_search_content = self.search_article_by_content(text)
-        result_search_title = self.search_article_by_title(text)
-        
-        for article in result_search_content:
-            article_list.append(article)
-
-        for article in result_search_title:
-            if article not in article_list:
+        conn = self.__get_client()
+        try:
+            article_list = list() 
+            collection = self.__get_collection(conn)
+            articles = collection.find({"$or":[{"content":{"$regex":".*" + text + ".*","$options":""}},{"title":{"$regex":".*" + text + ".*","$options":""}}]})
+            for article in articles:
                 article_list.append(article)
 
-        return article_list
+            return article_list
+        finally:
+            conn.close()
 
     def truncate_database(self):
         conn = self.__get_client()
